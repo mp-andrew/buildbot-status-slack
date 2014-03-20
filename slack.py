@@ -3,14 +3,16 @@ from buildbot.status.builder import Results, SUCCESS
 import os, urllib
 
 
-class HipChatStatusPush(StatusReceiverMultiService):
+class SlackStatusPush(StatusReceiverMultiService):
 
-  def __init__(self, api_token, room_id, localhost_replace=False, **kwargs):
+  def __init__(self, subdomain, api_token, channel_name, localhost_replace=False, builder_name=False, **kwargs):
       StatusReceiverMultiService.__init__(self)
 
+      self.subdomain = subdomain
       self.api_token = api_token
-      self.room_id = room_id
+      self.channel_name = channel_name
       self.localhost_replace = localhost_replace
+      self.builder_name = builder_name
 
   def setServiceParent(self, parent):
     StatusReceiverMultiService.setServiceParent(self, parent)
@@ -28,18 +30,20 @@ class HipChatStatusPush(StatusReceiverMultiService):
   def builderAdded(self, name, builder):
     return self  # subscribe to this builder
 
-  def buildFinished(self, builderName, build, result):
+  def buildFinished(self, builder_name, build, result):
     url = self.master_status.getURLForThing(build)
     if self.localhost_replace:
       url = url.replace("//localhost", "//%s" % self.localhost_replace)
+    if self.builder_name:
+      builder_name = self.builder_name
 
-    message = urllib.quote("<a href='%s'>%s</a> %s" % (url, builderName, Results[result].upper()))
     if result == SUCCESS:
-      color = "green"
-      notify = "0"
+      icon = ":buildbot_success:"
     else:
-      color = "red"
-      notify = "1"
+      icon = ":buildbot_failure:"
+    message = ("%s %s on <%s|%s>" % (icon, Results[result].upper(), url, builder_name))
 
+
+    data = ('payload={"channel": "%s", "text": "%s"}' % (self.channel_name, message))
     # Yes, we are in Twisted and shouldn't do os.system :)
-    os.system('curl -d "room_id=%s&from=Buildbot&message=%s&color=%s&notify=%s" https://api.hipchat.com/v1/rooms/message?auth_token=%s&format=json' % (self.room_id, message, color, notify, self.api_token))
+    os.system("curl -X POST -d '%s' https://%s.slack.com/services/hooks/incoming-webhook?token=%s" % (data, self.subdomain, self.api_token))
