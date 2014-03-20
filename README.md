@@ -1,28 +1,34 @@
-HipChat status plugin for Buildbot
-==================================
+Slack.io status plugin for Buildbot
+===================================
 
-This Buildbot plugin sends messages to a HipChat room when each build finishes with a handy link to the build results.
+This Buildbot plugin sends messages to a Slack.io channel when each build finishes with a handy link to the build results.
 
-This plugin was created by the dev team at http://www.pricingassistant.com/ ; Contributions are welcome!
-
+This plugin is based on the buildbot-status-hipchat plugin created by the dev team at http://www.pricingassistant.com/ ; Contributions are welcome!
 
 Install
 =======
 
-Copy hipchat.py next to your master.cfg file
+Copy slack.py next to your master.cfg file
 
 Then in your master.cfg, add the following:
 
 ```
-import hipchat
-c['status'].append(hipchat.HipChatStatusPush("YOUR_HIPCHAT_TOKEN", "HIPCHAT_ROOM_ID"))
+import slack
+c['status'].append(slack.slackStatusPush("YOUR_SLACK_TOKEN", "SLACK_CHANNEL_NAME"))
 ```
 
 If you Buildbot web frontend doesn't know its public address it will use "localhost" in its links. You can change this:
 
 ```
-import hipchat
-c['status'].append(hipchat.HipChatStatusPush("YOUR_HIPCHAT_TOKEN", "HIPCHAT_ROOM_ID", localhost_replace="buildbot.mycompany.com"))
+import slack
+c['status'].append(slack.slackStatusPush("YOUR_SLACK_TOKEN", "SLACK_CHANNEL_NAME", "buildbot.mycompany.com"))
+```
+
+If you want to specify a builder name you can add it to the master.cfg like this:
+
+```
+import slack
+c['status'].append(slack.SlackStatusPush("YOUR_SLACK_TOKEN", "SLACK_CHANNEL_NAME", "buildbot.mycompany.com", "builder name"))
 ```
 
 Enjoy!
