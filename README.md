@@ -16,14 +16,14 @@ Then in your master.cfg, add the following:
 
 ```
 import slack
-c['status'].append(slack.slackStatusPush("YOUR_SLACK_SUBDOMAIN", "YOUR_SLACK_TOKEN", "SLACK_CHANNEL_NAME"))
+c['status'].append(slack.SlackStatusPush("YOUR_SLACK_SUBDOMAIN", "YOUR_SLACK_TOKEN", "SLACK_CHANNEL_NAME"))
 ```
 
 If you Buildbot web frontend doesn't know its public address it will use "localhost" in its links. You can change this:
 
 ```
 import slack
-c['status'].append(slack.slackStatusPush("YOUR_SLACK_SUBDOMAIN", "YOUR_SLACK_TOKEN", "SLACK_CHANNEL_NAME", "buildbot.mycompany.com"))
+c['status'].append(slack.SlackStatusPush("YOUR_SLACK_SUBDOMAIN", "YOUR_SLACK_TOKEN", "SLACK_CHANNEL_NAME", "buildbot.mycompany.com"))
 ```
 
 If you want to specify a builder name you can add it to the master.cfg like this:
@@ -41,5 +41,20 @@ You need to define two new emoticons in your Slack Account:
 ```
 
 and add some fancy icons or gifs ;)
+
+## Example
+
+For a Slack Team named ```Empire``` i would have the subdomain ```empire``` and a Project named ```Death Star 2```.  
+Of course my generated Slack Token would be somthing like ```KILLALLTHEREBELS``` ;)  
+My Slack Channel name would be ```endor``` and my Buildbot would run under ```ci.empire.com```.  
+My Buildbot Builder would be called ```Vader```.
+
+So with this Example Data my master.cfg would look like this:
+
+```
+import slack
+c['status'].append(slack.SlackStatusPush("empire", "KILLALLTHEREBELS", "#endor", "ci.empire.com", "Vader"))
+```
+
 
 Enjoy!
