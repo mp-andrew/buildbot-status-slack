@@ -44,16 +44,15 @@ and add some fancy icons or gifs ;)
 
 ## Example
 
-For a Slack Team named ```Empire``` i would have the subdomain ```empire``` and a Project named ```Death Star 2```.  
+For a Slack Team named ```Empire``` i would have the subdomain ```empire``` and a Project named ```Death Star 2``` so my slack channel would be somthing like ```#death-star-2```.  
 Of course my generated Slack Token would be somthing like ```KILLALLTHEREBELS``` ;)  
-My Slack Channel name would be ```endor``` and my Buildbot would run under ```ci.empire.com```.  
-My Buildbot Builder would be called ```Vader```.
+My Buildbot would run under ```ci.empire.com``` and the Builder would be called ```Vader```.
 
 So with this Example Data my master.cfg would look like this:
 
 ```
 import slack
-c['status'].append(slack.SlackStatusPush("empire", "KILLALLTHEREBELS", "#endor", "ci.empire.com", "Vader"))
+c['status'].append(slack.SlackStatusPush("empire", "KILLALLTHEREBELS", "#death-star-2", "ci.empire.com", "Vader"))
 ```
 
 
