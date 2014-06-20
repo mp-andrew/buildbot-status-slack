@@ -9,7 +9,7 @@ setup(
     url='https://github.com/mindmatters/buildbot-status-slack',
     license='LICENSE.txt',
     description='slack status plugin for buildbot',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     install_requires=[
         "buildbot >= 0.8.0",
     ],
