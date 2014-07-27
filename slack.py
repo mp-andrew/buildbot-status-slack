@@ -31,7 +31,7 @@ class SlackStatusPush(StatusReceiverMultiService):
     return self  # subscribe to this builder
 
   def buildFinished(self, builder_name, build, result):
-    if (builder_name != self.builder_name):
+    if (self.builder_name and builder_name != self.builder_name):
       return
     url = self.master_status.getURLForThing(build)
     if self.localhost_replace:
