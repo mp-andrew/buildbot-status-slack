@@ -36,8 +36,6 @@ class SlackStatusPush(StatusReceiverMultiService):
     url = self.master_status.getURLForThing(build)
     if self.localhost_replace:
       url = url.replace("//localhost", "//%s" % self.localhost_replace)
-    if self.builder_name:
-      builder_name = self.builder_name
 
     if result == SUCCESS:
       icon = ":buildbot_success:"
