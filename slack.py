@@ -5,14 +5,13 @@ import os, urllib
 
 class SlackStatusPush(StatusReceiverMultiService):
 
-  def __init__(self, subdomain, api_token, channel_name, localhost_replace=False, builder_name=False, **kwargs):
+  def __init__(self, subdomain, api_token, channel_name, localhost_replace=False, **kwargs):
       StatusReceiverMultiService.__init__(self)
 
       self.subdomain = subdomain
       self.api_token = api_token
       self.channel_name = channel_name
       self.localhost_replace = localhost_replace
-      self.builder_name = builder_name
 
   def setServiceParent(self, parent):
     StatusReceiverMultiService.setServiceParent(self, parent)
@@ -31,17 +30,18 @@ class SlackStatusPush(StatusReceiverMultiService):
     return self  # subscribe to this builder
 
   def buildFinished(self, builder_name, build, result):
-    if (self.builder_name and builder_name != self.builder_name):
-      return
     url = self.master_status.getURLForThing(build)
     if self.localhost_replace:
       url = url.replace("//localhost", "//%s" % self.localhost_replace)
+
+    source_stamps = build.getSourceStamps()
+    branch_names = ', '.join([source_stamp.branch for source_stamp in source_stamps])
 
     if result == SUCCESS:
       icon = ":buildbot_success:"
     else:
       icon = ":buildbot_failure:"
-    message = ("%s %s on <%s|%s>" % (icon, Results[result].upper(), url, builder_name))
+    message = ("%s %s on <%s|%s>" % (icon, Results[result].upper(), url, branch_names))
 
 
     data = ('payload={"channel": "%s", "text": "%s"}' % (self.channel_name, message))
