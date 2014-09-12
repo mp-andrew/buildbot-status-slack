@@ -36,12 +36,13 @@ class SlackStatusPush(StatusReceiverMultiService):
 
     source_stamps = build.getSourceStamps()
     branch_names = ', '.join([source_stamp.branch for source_stamp in source_stamps])
+    responsible_users = ', '.join(build.getResponsibleUsers())
 
     if result == SUCCESS:
       icon = ":buildbot_success:"
     else:
       icon = ":buildbot_failure:"
-    message = ("%s %s on <%s|%s>" % (icon, Results[result].upper(), url, branch_names))
+    message = ("%s %s on <%s|%s> by %s" % (icon, Results[result].upper(), url, branch_names, responsible_users))
 
 
     data = ('payload={"channel": "%s", "text": "%s"}' % (self.channel_name, message))
