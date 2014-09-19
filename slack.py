@@ -13,6 +13,7 @@ class SlackStatusPush(StatusReceiverMultiService):
       self.channel_name = channel_name
       self.localhost_replace = localhost_replace
       self.builder_name = builder_name
+      self.watched = []
 
   def setServiceParent(self, parent):
     StatusReceiverMultiService.setServiceParent(self, parent)
@@ -28,6 +29,7 @@ class SlackStatusPush(StatusReceiverMultiService):
     return StatusReceiverMultiService.disownServiceParent(self)
 
   def builderAdded(self, name, builder):
+    self.watched.append(builder)
     return self  # subscribe to this builder
 
   def buildFinished(self, builder_name, build, result):
