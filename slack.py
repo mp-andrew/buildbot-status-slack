@@ -38,6 +38,7 @@ class SlackStatusPush(StatusReceiverMultiService):
         self.icon = icon
         self.notify_on_success = notify_on_success
         self.notify_on_failure = notify_on_failure
+        self.watched = []
 
     def setServiceParent(self, parent):
         StatusReceiverMultiService.setServiceParent(self, parent)
@@ -53,6 +54,7 @@ class SlackStatusPush(StatusReceiverMultiService):
         return StatusReceiverMultiService.disownServiceParent(self)
 
     def builderAdded(self, name, builder):
+        self.watched.append(builder)
         return self  # subscribe to this builder
 
     def buildFinished(self, builder_name, build, result):
