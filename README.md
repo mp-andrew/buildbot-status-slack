@@ -7,8 +7,6 @@ This plugin is based on the buildbot-status-hipchat plugin created by the dev te
 
 ## Install
 
-Create a new Incomming Webhook in your slack account.
-
 ### via pip
 
 ```
@@ -21,6 +19,8 @@ Copy slack.py next to your master.cfg file
 
 
 ## Setup
+
+Create a new Incomming Webhook in your slack account.
 
 Then in your master.cfg, add the following:
 
