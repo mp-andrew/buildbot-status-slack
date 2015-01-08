@@ -58,9 +58,6 @@ class SlackStatusPush(StatusReceiverMultiService):
         return self  # subscribe to this builder
 
     def buildFinished(self, builder_name, build, result):
-        if (self.builder_name and builder_name != self.builder_name):
-            return
-
         if not self.notify_on_success and result == SUCCESS:
             return
 
@@ -74,18 +71,45 @@ class SlackStatusPush(StatusReceiverMultiService):
 
         source_stamps = build.getSourceStamps()
         branch_names = ', '.join([source_stamp.branch for source_stamp in source_stamps])
+        repositories = ', '.join([source_stamp.repository for source_stamp in source_stamps])
         responsible_users = ', '.join(build.getResponsibleUsers())
+        revision = ', '.join([source_stamp.revision for source_stamp in source_stamps])
+        project = ', '.join([source_stamp.project for source_stamp in source_stamps])
 
         if result == SUCCESS:
+            status = "Success"
             color = "good"
         else:
+            status = "Failure"
             color = "failure"
-        message = "{result} on <{url}|{branch}> by {user}".format(
-            result=Results[result].upper(),
-            url=url,
-            branch=branch_names,
-            user=responsible_users
+
+        message = "New Build for {project} ({revision})\nStatus: *{status}*\nBuild details: {url}".format(
+            project=project,
+            revision=revision,
+            status=status,
+            url=build_url
         )
+
+        fields = []
+        if responsible_users:
+            fields.append({
+                "title": "Commiters",
+                "value": responsible_users
+            })
+
+        if repositories:
+            fields.append({
+                "title": "Repository",
+                "value": repositories,
+                "short": True
+            })
+
+        if branch_names:
+            fields.append({
+                "title": "Branch",
+                "value": branch_names,
+                "short": True
+            })
 
         payload = {
             "text": " ",
@@ -93,7 +117,9 @@ class SlackStatusPush(StatusReceiverMultiService):
               {
                 "fallback": message,
                 "text": message,
-                "color": color
+                "color": color,
+                "mrkdwn_in": ["text", "title", "fallback"],
+                "fields": fields
               }
             ]
         }
