@@ -11,7 +11,7 @@ class SlackStatusPush(StatusReceiverMultiService):
     """
 
     def __init__(self, subdomain, api_token, channel_name,
-                 localhost_replace=False, builder_name=False, username=None,
+                 localhost_replace=False, username=None,
                  icon=None, notify_on_success=True, notify_on_failure=True,
                  **kwargs):
         """
@@ -23,9 +23,6 @@ class SlackStatusPush(StatusReceiverMultiService):
         :param localhost_replace: If your Buildbot web fronted doesn't know
             its public address it will use "localhost" in its links. You can
             change this by setting this variable to true.
-        :param builder_name: If you specify this, you'll only get messages
-            for the specified builder. By default you'll get messages from
-            all builders.
         :param username: The user name of the "user" positing the messages on
             Slack.
         :param icon: The icon of the "user" posting the messages on Slack.
@@ -78,15 +75,21 @@ class SlackStatusPush(StatusReceiverMultiService):
             build_url = build_url.replace("//localhost", "//{}".format(
                 self.localhost_replace))
 
+        source_stamps = build.getSourceStamps()
+        branch_names = ', '.join([source_stamp.branch for source_stamp in source_stamps])
+        responsible_users = ', '.join(build.getResponsibleUsers())
+
         if result == SUCCESS:
             icon = ":buildbot_success:"
         else:
             icon = ":buildbot_failure:"
-        message = "{icon} {result} on <{build_url}|{builder_name}>".format(
+        message = "{icon} {result} on <{url}|{branch}> by {user}".format(
             icon=icon,
             result=Results[result].upper(),
-            build_url=build_url,
-            builder_name=builder_name)
+            url=url,
+            branch=branch_names,
+            user=responsible_users
+        )
 
         payload = {
             "channel": self.channel_name,
