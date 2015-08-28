@@ -13,6 +13,7 @@ class SlackStatusPush(StatusReceiverMultiService):
     def __init__(self, weburl,
                  localhost_replace=False, username=None,
                  icon=None, notify_on_success=True, notify_on_failure=True,
+                 user_to_handle={},
                  **kwargs):
         """
         Creates a SlackStatusPush status service.
@@ -28,6 +29,8 @@ class SlackStatusPush(StatusReceiverMultiService):
             messages when a build was successful.
         :param notify_on_failure: Set this to False if you don't want
             messages when a build failed.
+        :param user_to_handle: A mapping of responsible users to slack handles
+            Slack.
         """
 
         StatusReceiverMultiService.__init__(self)
@@ -39,6 +42,7 @@ class SlackStatusPush(StatusReceiverMultiService):
         self.notify_on_success = notify_on_success
         self.notify_on_failure = notify_on_failure
         self.watched = []
+        self.user_to_handle = user_to_handle
 
     def setServiceParent(self, parent):
         StatusReceiverMultiService.setServiceParent(self, parent)
@@ -83,7 +87,11 @@ class SlackStatusPush(StatusReceiverMultiService):
             status = "Failure"
             color = "failure"
 
-        message = "New Build for {project} ({revision})\nStatus: *{status}*\nBuild details: {url}".format(
+        handles = filter(lambda h: h is not None, [self.user_to_handle.get(user) for user in build.getResponsibleUsers()])
+        mentions = ''.join(['@' + handle + ' ' for handle in handles])
+
+        message = "{mentions}New Build for {project} ({revision})\nStatus: *{status}*\nBuild details: {url}".format(
+            mentions=mentions,
             project=project,
             revision=revision,
             status=status,
